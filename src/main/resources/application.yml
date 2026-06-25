@@ -75,6 +75,12 @@ management:
         otlp:
           endpoint: ${OTLP_ENDPOINT:http://localhost:4318}/v1/traces
 
+# Gateway 커스텀 설정
+gateway:
+  cache:
+    # Pub/Sub 유실 대비 안전망 — 30초마다 DB에서 전체 리로드
+    route-reload-interval-ms: 30000
+
 # Logging
 logging:
   level:
