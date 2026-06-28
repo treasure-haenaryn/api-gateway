@@ -12,10 +12,16 @@ public class CacheEventPublisher {
 
     private final StringRedisTemplate redisTemplate;
 
-    public static final String ROUTE_UPDATED_CHANNEL = "gateway:routes:updated";
+    public static final String ROUTE_UPDATED_CHANNEL  = "gateway:routes:updated";
+    public static final String APIKEY_UPDATED_CHANNEL = "gateway:apikeys:updated";
 
     public void publishRouteUpdated(String routeId) {
         redisTemplate.convertAndSend(ROUTE_UPDATED_CHANNEL, routeId);
         log.info("[CacheEventPublisher] 라우팅 변경 이벤트 발행 — routeId: {}", routeId);
+    }
+
+    public void publishApiKeyUpdated(String keyHash) {
+        redisTemplate.convertAndSend(APIKEY_UPDATED_CHANNEL, keyHash);
+        log.info("[CacheEventPublisher] API Key 변경 이벤트 발행 — keyHash: {}...", keyHash.substring(0, 8));
     }
 }
