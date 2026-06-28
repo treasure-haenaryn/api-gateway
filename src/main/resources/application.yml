@@ -80,6 +80,10 @@ gateway:
   cache:
     # Pub/Sub 유실 대비 안전망 — 30초마다 DB에서 전체 리로드
     route-reload-interval-ms: 30000
+    # 캐시 최대 사이즈 — 실제 항목 수만큼만 메모리 사용 (상한선)
+    route-max-size: ${CACHE_ROUTE_MAX_SIZE:1000}
+    apikey-max-size: ${CACHE_APIKEY_MAX_SIZE:10000}
+    scope-max-size: ${CACHE_SCOPE_MAX_SIZE:10000}
 
 # Logging
 logging:

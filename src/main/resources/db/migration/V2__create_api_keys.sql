@@ -8,7 +8,7 @@ CREATE TABLE api_keys (
     name                    VARCHAR(200) NOT NULL,
     description             TEXT,
     owner                   VARCHAR(200),
-    key_type                VARCHAR(20)  NOT NULL DEFAULT 'LIVE',  -- LIVE / TEST / INTERNAL
+    key_type                VARCHAR(20)  NOT NULL DEFAULT 'EXTERNAL',  -- EXTERNAL / INTERNAL
     ip_whitelist            JSONB,
     rate_limit_per_sec      INTEGER,
     rate_limit_per_day      INTEGER,
