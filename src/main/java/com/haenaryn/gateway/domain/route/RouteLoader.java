@@ -115,7 +115,10 @@ public class RouteLoader implements ApplicationRunner {
         // 게이트웨이는 모든 메서드를 다운스트림으로 전달
         // 메서드 제한은 다운스트림 서비스 또는 API Key 스코프 필터에서 처리
         var builder = route(routeRecord.getRouteId())
-                .route(RequestPredicates.all(), http())
+                .route(RequestPredicates.all()
+                        .and(RequestPredicates.path("/fallback/**").negate())
+                        .and(RequestPredicates.path("/actuator/**").negate()),
+                        http())
                 .before(uri(URI.create(routeRecord.getDownstreamUri())));
 
         // 서킷브레이커 설정 적용 (circuit_breaker_config JSONB)

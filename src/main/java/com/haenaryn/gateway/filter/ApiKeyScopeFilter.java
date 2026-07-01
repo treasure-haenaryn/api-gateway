@@ -31,6 +31,11 @@ public class ApiKeyScopeFilter implements HandlerFilterFunction<ServerResponse, 
             throws Exception {
 
         Long apiKeyId = (Long) request.attributes().get("apiKeyId");
+
+        if (request.path().startsWith("/fallback") || request.path().startsWith("/actuator")) {
+            return next.handle(request);
+        }
+
         if (apiKeyId == null) {
             // API Key 인증을 거치지 않은 요청 → 스코프 검증 스킵
             return next.handle(request);

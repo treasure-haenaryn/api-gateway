@@ -28,6 +28,10 @@ public class SecurityHeaderFilter implements HandlerFilterFunction<ServerRespons
     public ServerResponse filter(ServerRequest request, HandlerFunction<ServerResponse> next)
             throws Exception {
 
+        if (request.path().startsWith("/fallback") || request.path().startsWith("/actuator")) {
+            return next.handle(request);
+        }
+
         // 내부 헤더 포함 여부 로깅 (운영 시 위조 시도 감지용)
         INTERNAL_HEADERS.forEach(header -> {
             if (request.headers().firstHeader(header) != null) {
