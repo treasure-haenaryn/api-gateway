@@ -50,6 +50,7 @@ management:
           - metrics
           - gateway
           - flyway
+          - circuitbreakers
   endpoint:
     health:
       show-details: always

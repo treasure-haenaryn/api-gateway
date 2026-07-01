@@ -46,6 +46,10 @@ public class ApiKeyFilter implements HandlerFilterFunction<ServerResponse, Serve
     public ServerResponse filter(ServerRequest request, HandlerFunction<ServerResponse> next)
             throws Exception {
 
+        if (request.path().startsWith("/fallback") || request.path().startsWith("/actuator")) {
+            return next.handle(request);
+        }
+
         String rawKey = request.headers().firstHeader("X-API-Key");
         if (rawKey == null || rawKey.isBlank()) {
             log.debug("[ApiKeyFilter] API Key 헤더 없음 — path: {}", request.path());
