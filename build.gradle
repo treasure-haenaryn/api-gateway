@@ -47,10 +47,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'com.github.ben-manes.caffeine:caffeine'
 
-    // JWT (JWKS 서명 검증)
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+    // JWT (JWKS 서명 검증 — nimbus-jose-jwt 사용)
+    // RFC 7517 (JWK), RFC 7519 (JWT) 완전 준수, 실무 표준 라이브러리
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.40'
 
     // Actuator + Prometheus (메트릭)
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
