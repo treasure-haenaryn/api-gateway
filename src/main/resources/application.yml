@@ -1,5 +1,4 @@
 
-
 spring:
   application:
     name: api-gateway
@@ -101,6 +100,11 @@ gateway:
     max-age: 3600
 
   jwt:
+    # JWKS 엔드포인트 URL (인증 서버의 공개키 제공 URL)
+    jwks-uri: ${JWT_JWKS_URI:http://localhost:9000/.well-known/jwks.json}
+    # 공개키 캐시 갱신 주기 (초) — 공개키 교체 대응
+    jwks-refresh-interval-sec: ${JWT_JWKS_REFRESH_SEC:3600}
+    # JWT 블랙리스트 활성화 여부
     blacklist-enabled: ${JWT_BLACKLIST_ENABLED:true}
 
 # Logging
