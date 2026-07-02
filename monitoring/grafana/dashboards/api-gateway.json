@@ -1,0 +1,142 @@
+{
+  "title": "API Gateway Dashboard",
+  "uid": "api-gateway",
+  "version": 1,
+  "schemaVersion": 38,
+  "refresh": "10s",
+  "time": { "from": "now-30m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "초당 요청 수 (RPS)",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_count{job=\"api-gateway\"}[1m])",
+          "legendFormat": "{{method}} {{uri}} {{status}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "평균 응답 시간 (ms)",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_sum{job=\"api-gateway\"}[1m]) / rate(http_server_requests_seconds_count{job=\"api-gateway\"}[1m]) * 1000",
+          "legendFormat": "{{uri}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "4xx / 5xx 에러율",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_count{job=\"api-gateway\", status=~\"4..\"}[1m])",
+          "legendFormat": "4xx"
+        },
+        {
+          "expr": "rate(http_server_requests_seconds_count{job=\"api-gateway\", status=~\"5..\"}[1m])",
+          "legendFormat": "5xx"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Rate Limit 차단 수",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(gateway_rate_limit_blocked_total{job=\"api-gateway\"}[1m])",
+          "legendFormat": "{{type}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "인증 실패 수",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(gateway_auth_failed_total{job=\"api-gateway\"}[1m])",
+          "legendFormat": "{{reason}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "라우팅별 요청 소요 시간 (ms)",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(gateway_route_duration_seconds_sum{job=\"api-gateway\"}[1m]) / rate(gateway_route_duration_seconds_count{job=\"api-gateway\"}[1m]) * 1000",
+          "legendFormat": "{{route_id}} {{status}}"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "캐시 히트율",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 24, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(cache_gets_total{job=\"api-gateway\", result=\"hit\"}[1m]) / rate(cache_gets_total{job=\"api-gateway\"}[1m]) * 100",
+          "legendFormat": "{{cache}} 히트율 (%)"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "JVM 메모리 사용량",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 24, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "jvm_memory_used_bytes{job=\"api-gateway\"}",
+          "legendFormat": "{{area}}"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "HikariCP 커넥션 풀",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 32, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "hikaricp_connections_active{job=\"api-gateway\"}",
+          "legendFormat": "active"
+        },
+        {
+          "expr": "hikaricp_connections_pending{job=\"api-gateway\"}",
+          "legendFormat": "pending"
+        },
+        {
+          "expr": "hikaricp_connections_idle{job=\"api-gateway\"}",
+          "legendFormat": "idle"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "서킷브레이커 상태",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 32, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "resilience4j_circuitbreaker_state{job=\"api-gateway\"}",
+          "legendFormat": "{{name}} {{state}}"
+        }
+      ]
+    }
+  ]
+}

@@ -61,17 +61,12 @@ management:
     export:
       prometheus:
         enabled: true
+  tracing:
+    sampling:
+      probability: 1.0  # 개발: 100%, 운영: 0.1 권장
   opentelemetry:
     resource-attributes:
       service.name: api-gateway
-  tracing:
-    sampling:
-      probability: 1.0  # 개발 환경 100%, 운영 환경 0.1 권장
-  otlp:
-    metrics:
-      export:
-        url: ${OTLP_ENDPOINT:http://localhost:4318}/v1/metrics
-        enabled: ${OTLP_ENABLED:false}  # 로컬 개발 시 false, 운영 시 true
     tracing:
       export:
         otlp:
@@ -113,3 +108,5 @@ logging:
     com.haenaryn.gateway: DEBUG
     org.springframework.cloud.gateway: DEBUG
     org.flywaydb: DEBUG
+    io.opentelemetry: DEBUG
+    io.micrometer.tracing: DEBUG

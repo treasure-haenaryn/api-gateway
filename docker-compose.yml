@@ -1,5 +1,6 @@
 services:
 
+  # ── 인프라 ──────────────────────────────────────────────────
   postgres:
     image: postgres:16
     container_name: gateway-postgres
@@ -12,7 +13,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U gateway" ]
+      test: ["CMD-SHELL", "pg_isready -U gateway"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -23,7 +24,7 @@ services:
     ports:
       - "6379:6379"
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -34,5 +35,43 @@ services:
     ports:
       - "1080:1080"
 
+  # ── 모니터링 스택 ────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: gateway-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # 로컬 앱(8080)에 접근하기 위한 설정
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: gateway-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    depends_on:
+      - prometheus
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: gateway-jaeger
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "4318:4318"    # OTLP HTTP (앱에서 Trace 전송)
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+
 volumes:
   postgres_data:
+  grafana_data:
