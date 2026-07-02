@@ -61,6 +61,8 @@ management:
     export:
       prometheus:
         enabled: true
+      otlp:
+        enabled: false  # Jaeger는 메트릭 지원 안 함 — 메트릭은 Prometheus 담당
   tracing:
     sampling:
       probability: 1.0  # 개발: 100%, 운영: 0.1 권장
@@ -87,7 +89,7 @@ gateway:
     apikey-per-sec: ${RATE_LIMIT_APIKEY_SEC:100}
     apikey-per-day: ${RATE_LIMIT_APIKEY_DAY:10000}
     # IP별 제한 (DDoS 방어)
-    ip-per-sec: ${RATE_LIMIT_IP_SEC:30}
+    ip-per-sec: ${RATE_LIMIT_IP_SEC:5}
 
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}

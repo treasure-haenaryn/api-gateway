@@ -43,12 +43,14 @@ public class RateLimitFilter implements HandlerFilterFunction<ServerResponse, Se
     public ServerResponse filter(ServerRequest request, HandlerFunction<ServerResponse> next)
             throws Exception {
 
-        if (request.path().startsWith("/fallback") || request.path().startsWith("/actuator")) {
+        if (request.path().startsWith("/fallback") || request.path().startsWith("/actuator") || request.path().startsWith("/error")) {
             return next.handle(request);
         }
 
         String clientIp = getClientIp(request);
         String apiKeyPrefix = (String) request.attributes().get("apiKeyPrefix");
+        log.debug("[RateLimitFilter] 요청 수신 — ip: {}, apiKeyPrefix: {}, ipLimit: {}",
+                clientIp, apiKeyPrefix, rateLimitConfig.getIpPerSec());
 
         // 1. IP별 초당 제한 확인
         if (!checkRateLimit(
@@ -61,10 +63,11 @@ public class RateLimitFilter implements HandlerFilterFunction<ServerResponse, Se
 
         // 2. API Key별 초당 제한 확인
         if (apiKeyPrefix != null) {
-            String apiKeyHash = (String) request.attributes().get("apiKeyId");
+            Long apiKeyId = (Long) request.attributes().get("apiKeyId");
+            String apiKeyIdStr = apiKeyId != null ? String.valueOf(apiKeyId) : apiKeyPrefix;
 
             if (!checkRateLimit(
-                    "gateway:ratelimit:apikey:" + apiKeyHash + ":sec:" + Instant.now().getEpochSecond(),
+                    "gateway:ratelimit:apikey:" + apiKeyIdStr + ":sec:" + Instant.now().getEpochSecond(),
                     rateLimitConfig.getApikeyPerSec(),
                     1)) {
                 log.warn("[RateLimitFilter] API Key 초당 제한 초과 — prefix: {}", apiKeyPrefix);
@@ -74,7 +77,7 @@ public class RateLimitFilter implements HandlerFilterFunction<ServerResponse, Se
             // 3. API Key별 일별 제한 확인
             String today = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
             if (!checkRateLimit(
-                    "gateway:ratelimit:apikey:" + apiKeyHash + ":day:" + today,
+                    "gateway:ratelimit:apikey:" + apiKeyIdStr + ":day:" + today,
                     rateLimitConfig.getApikeyPerDay(),
                     86400)) {
                 log.warn("[RateLimitFilter] API Key 일별 제한 초과 — prefix: {}", apiKeyPrefix);
@@ -115,10 +118,12 @@ public class RateLimitFilter implements HandlerFilterFunction<ServerResponse, Se
         // X-Forwarded-For 헤더 우선 (로드밸런서 뒤에 있을 경우)
         String forwarded = request.headers().firstHeader("X-Forwarded-For");
         if (forwarded != null && !forwarded.isBlank()) {
-            return forwarded.split(",")[0].trim();
+            return forwarded.split(",")[0].trim().replace(":", "_");
         }
-        return request.remoteAddress()
+        String ip = request.remoteAddress()
                 .map(addr -> addr.getAddress().getHostAddress())
                 .orElse("unknown");
+        // IPv6 콜론을 언더스코어로 변환 (Redis 키에 콜론 포함 시 파싱 오류)
+        return ip.replace(":", "_");
     }
 }

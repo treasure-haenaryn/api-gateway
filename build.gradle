@@ -31,6 +31,7 @@ dependencies {
 
     // PostgreSQL
     runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.postgresql:postgresql'
 
     // Flyway (spring-boot-starter-flyway 사용 필수 — Spring Boot 4 모듈화로
     // flyway-core만 있으면 AutoConfiguration 비활성화됨)

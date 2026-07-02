@@ -37,7 +37,7 @@ public class JwtFilter implements HandlerFilterFunction<ServerResponse, ServerRe
             throws Exception {
 
         // /fallback, /actuator 경로는 JWT 검증 스킵
-        if (request.path().startsWith("/fallback") || request.path().startsWith("/actuator")) {
+        if (request.path().startsWith("/fallback") || request.path().startsWith("/actuator") || request.path().startsWith("/error")) {
             return next.handle(request);
         }
 

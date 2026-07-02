@@ -28,7 +28,7 @@ public class SecurityHeaderFilter implements HandlerFilterFunction<ServerRespons
     public ServerResponse filter(ServerRequest request, HandlerFunction<ServerResponse> next)
             throws Exception {
 
-        if (request.path().startsWith("/fallback") || request.path().startsWith("/actuator")) {
+        if (request.path().startsWith("/fallback") || request.path().startsWith("/actuator") || request.path().startsWith("/error")) {
             return next.handle(request);
         }
 

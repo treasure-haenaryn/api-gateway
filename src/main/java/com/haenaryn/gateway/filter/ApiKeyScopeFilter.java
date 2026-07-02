@@ -32,7 +32,7 @@ public class ApiKeyScopeFilter implements HandlerFilterFunction<ServerResponse, 
 
         Long apiKeyId = (Long) request.attributes().get("apiKeyId");
 
-        if (request.path().startsWith("/fallback") || request.path().startsWith("/actuator")) {
+        if (request.path().startsWith("/fallback") || request.path().startsWith("/actuator") || request.path().startsWith("/error")) {
             return next.handle(request);
         }
 
@@ -64,7 +64,8 @@ public class ApiKeyScopeFilter implements HandlerFilterFunction<ServerResponse, 
         }
 
         log.debug("[ApiKeyScopeFilter] 스코프 검증 성공 — path: {}, method: {}", requestPath, requestMethod);
-        return next.handle(request);
+        return next.
+                handle(request);
     }
 
     private List<ApiKeyScopeRecord> getScopesFromCache(Long apiKeyId) {
